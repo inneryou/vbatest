@@ -1,3 +1,7 @@
+'/**
+'* ダウンロードフォルダにtempフォルダを作成する
+'* @author
+'*
 Public Sub CreateTempFolder()
 Dim tempFolder As String
 Dim WSH As Object
@@ -12,3 +16,30 @@ Dim WSH As Object
     End If
     
     Set WSH = Nothing
+End Sub
+
+'/**
+'* ダウンロードフォルダのtempフォルダを削除する
+'* @author
+'*
+Public Sub DeleteTempFolder()
+Dim tempFolder As String
+Dim WSH As Object
+Dim FSO As Object
+
+    Set WSH = CreateObject("WScript.Shell")
+    Set FSO = CreateObject("Scripting.FileSystemObject")
+    
+    tempFolder = WSH.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
+    Debug.Print tempFolder
+    
+    If Dir(tempFolder, vbDirectory) <> "" Then
+        FSO.DeleteFolder tempFolder
+    End If
+    
+    Set WSH = Nothing
+    Set FSO = Nothing
+    
+    Debug.Print "完了"
+    
+End Sub
