@@ -1,0 +1,14 @@
+Public Sub CreateTempFolder()
+Dim tempFolder As String
+Dim WSH As Object
+
+    Set WSH = CreateObject("WScript.Shell")
+    
+    tempFolder = WSH.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
+    Debug.Print tempFolder
+    
+    If Dir(tempFolder, vbDirectory) = "" Then
+        MkDir tempFolder
+    End If
+    
+    Set WSH = Nothing
