@@ -1,0 +1,25 @@
+'--------------------------------------------------------------------------------
+' 手順 : DeleteTempFolder
+' 作成者 :
+' 日付   :
+' 目的   : ダウンロードフォルダ内のtempフォルダを削除する
+'--------------------------------------------------------------------------------
+Public Sub DeleteTempFolder()
+    Dim objFSO As Object 'File System Objectオブジェクトを保持する変数
+    Dim tempFolder As String 'tempフォルダのパスを保持する変数
+
+    'File System Objectオブジェクトを作成
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+    'tempフォルダのパスを取得
+    tempFolder = objFSO.GetSpecialFolder(2) & "\temp"
+
+    'tempフォルダが存在する場合
+    If objFSO.FolderExists(tempFolder) Then
+        'tempフォルダを削除
+        objFSO.DeleteFolder tempFolder, True
+    End If
+
+    'オブジェクトを解放
+    Set objFSO = Nothing
+End Sub
