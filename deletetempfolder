@@ -12,7 +12,7 @@ Public Sub DeleteTempFolder()
     Set objFSO = CreateObject("Scripting.FileSystemObject")
 
     'tempフォルダのパスを取得
-    tempFolder = objFSO.GetSpecialFolder(2) & "\temp"
+    tempFolder = objFSO.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
 
     'tempフォルダが存在する場合
     If objFSO.FolderExists(tempFolder) Then
