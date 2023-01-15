@@ -6,13 +6,17 @@
 '--------------------------------------------------------------------------------
 Public Sub DeleteTempFolder()
     Dim objFSO As Object 'File System Objectオブジェクトを保持する変数
+    Dim objShell As Object 'WScript.Shellオブジェクトを保持する変数
     Dim tempFolder As String 'tempフォルダのパスを保持する変数
 
     'File System Objectオブジェクトを作成
     Set objFSO = CreateObject("Scripting.FileSystemObject")
-
+    
+    'WScript.Shellオブジェクトを作成
+    Set objShell = CreateObject("WScript.Shell")
+    
     'tempフォルダのパスを取得
-    tempFolder = objFSO.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
+    tempFolder = objShell.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
 
     'tempフォルダが存在する場合
     If objFSO.FolderExists(tempFolder) Then
@@ -22,4 +26,7 @@ Public Sub DeleteTempFolder()
 
     'オブジェクトを解放
     Set objFSO = Nothing
+    
+    MsgBox "完了"
+    
 End Sub
