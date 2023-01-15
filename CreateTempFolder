@@ -1,45 +1,53 @@
-'/**
-'* ダウンロードフォルダにtempフォルダを作成する
-'* @author
-'*
-Public Sub CreatetempFolderPath()
-Dim tempFolderPath As String
-Dim objShell As Object
-
-    Set objShell = CreateObject("WScript.Shell")
+'--------------------------------------------------------------------------------
+' 手順 : SaveAttachment
+' 作成者 :
+' 日付   :
+' 目的   : Outlookのインボックスフォルダからすべてのメールアイテムの添付ファイルをダウンロードフォルダに保存する
+'--------------------------------------------------------------------------------
+Public Sub SaveAttachment()
+    Dim objOutlook As Outlook.Application 'Outlookアプリケーションオブジェクトを保持する変数
+    Dim objNamespace As Outlook.NameSpace 'OutlookのNameSpaceを保持する変数
+    Dim objFolder As Outlook.MAPIFolder 'OutlookのMAPIFolderを保持する変数
+    Dim objMail As Outlook.MailItem 'OutlookのMailItemを保持する変数
+    Dim objAttachments As Outlook.Attachments 'メールアイテムの添付ファイルを保持する変数
+    Dim objAttachment As Outlook.Attachment '個別の添付ファイルを保持する変数
+    Dim strDownloadFolder As String 'ダウンロードフォルダのパスを保持する変数
+    Dim strAttachmentName As String '添付ファイル名を保持する変数
+    Dim objShell As Object 'WScript.Shellオブジェクトを保持する変数
     
-    tempFolderPath = objShell.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
-    Debug.Print tempFolderPath
+    'Outlookアプリケーションオブジェクトを作成
+    Set objOutlook = New Outlook.Application
+    'MAPIのNameSpaceを取得
+    Set objNamespace = objOutlook.GetNamespace("MAPI")
+    '受信トレイフォルダを取得
+    Set objFolder = objNamespace.GetDefaultFolder(olFolderInbox)
     
-    If Dir(tempFolderPath, vbDirectory) = "" Then
-        MkDir tempFolderPath
-    End If
+    '受信トレイフォルダ内のすべてのメールアイテムを取得
+    For Each objMail In objFolder.Items
+        '添付ファイルがある場合
+        If objMail.Attachments.Count > 0 Then
+            '添付ファイルを取得
+            Set objAttachments = objMail.Attachments
+            'WScript.Shellオブジェクトを作成
+            Set objShell = CreateObject("WScript.Shell")
+            'ダウンロードフォルダのパスを取得
+            strDownloadFolder = objShell.SpecialFolders("MyDocuments") & "\..\Downloads\"
+            'すべての添付ファイルを保存
+            For Each objAttachment In objAttachments
+                '添付ファイル名を取得
+                strAttachmentName = objAttachment.FileName
+                '添付ファイルをダウンロードフォルダに保存
+                objAttachment.SaveAsFile strDownloadFolder & strAttachmentName
+            Next objAttachment
+        End If
+    Next objMail
     
+    'オブジェクトを解放
+    Set objOutlook = Nothing
+    Set objNamespace = Nothing
+    Set objFolder = Nothing
+    Set objMail = Nothing
+    Set objAttachments = Nothing
+    Set objAttachment = Nothing
     Set objShell = Nothing
-End Sub
-
-'/**
-'* ダウンロードフォルダのtempフォルダを削除する
-'* @author
-'*
-Public Sub DeletetempFolderPath()
-Dim tempFolderPath As String
-Dim objShell As Object
-Dim objFSO As Object
-
-    Set objShell = CreateObject("WScript.Shell")
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    
-    tempFolderPath = objShell.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
-    Debug.Print tempFolderPath
-    
-    If Dir(tempFolderPath, vbDirectory) <> "" Then
-        objFSO.DeleteFolder tempFolderPath
-    End If
-    
-    Set objShell = Nothing
-    Set objFSO = Nothing
-    
-    Debug.Print "完了"
-    
 End Sub
