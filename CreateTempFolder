@@ -2,43 +2,43 @@
 '* ダウンロードフォルダにtempフォルダを作成する
 '* @author
 '*
-Public Sub CreateTempFolder()
-Dim tempFolder As String
-Dim WSH As Object
+Public Sub CreatetempFolderPath()
+Dim tempFolderPath As String
+Dim objShell As Object
 
-    Set WSH = CreateObject("WScript.Shell")
+    Set objShell = CreateObject("WScript.Shell")
     
-    tempFolder = WSH.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
-    Debug.Print tempFolder
+    tempFolderPath = objShell.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
+    Debug.Print tempFolderPath
     
-    If Dir(tempFolder, vbDirectory) = "" Then
-        MkDir tempFolder
+    If Dir(tempFolderPath, vbDirectory) = "" Then
+        MkDir tempFolderPath
     End If
     
-    Set WSH = Nothing
+    Set objShell = Nothing
 End Sub
 
 '/**
 '* ダウンロードフォルダのtempフォルダを削除する
 '* @author
 '*
-Public Sub DeleteTempFolder()
-Dim tempFolder As String
-Dim WSH As Object
-Dim FSO As Object
+Public Sub DeletetempFolderPath()
+Dim tempFolderPath As String
+Dim objShell As Object
+Dim objFSO As Object
 
-    Set WSH = CreateObject("WScript.Shell")
-    Set FSO = CreateObject("Scripting.FileSystemObject")
+    Set objShell = CreateObject("WScript.Shell")
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
     
-    tempFolder = WSH.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
-    Debug.Print tempFolder
+    tempFolderPath = objShell.SpecialFolders("MyDocuments") & "\..\Downloads\temp"
+    Debug.Print tempFolderPath
     
-    If Dir(tempFolder, vbDirectory) <> "" Then
-        FSO.DeleteFolder tempFolder
+    If Dir(tempFolderPath, vbDirectory) <> "" Then
+        objFSO.DeleteFolder tempFolderPath
     End If
     
-    Set WSH = Nothing
-    Set FSO = Nothing
+    Set objShell = Nothing
+    Set objFSO = Nothing
     
     Debug.Print "完了"
     
