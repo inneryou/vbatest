@@ -1,0 +1,46 @@
+Sub ArrayTest()
+Dim aryData(31, 1440) As Integer
+Dim myRange As Range
+Dim startDate As Date, endDate As Date
+Dim startDay As Integer, startYear As Integer, startMonth As Integer
+Dim startP As Integer, endP As Integer
+Dim str As String
+Dim i As Integer, j As Integer
+Dim counter As Integer
+
+    sh_Data.Select
+    Range("A1").Activate
+    
+    Set myRange = Range("A2")
+    
+    Do Until myRange = ""
+        startDate = CDate(myRange)
+        endDate = CDate(myRange.Offset(0, 1))
+        startYear = Year(startDate)
+        startMonth = Month(startDate)
+        startDay = Day(myRange)
+        str = startYear & "/" & startMonth & "/" & startDay & " 0:00:00"
+        startP = DateDiff("n", CDate(str), startDate)
+        endP = DateDiff("n", CDate(str), endDate)
+        
+        Debug.Print startP & " " & endP
+        
+        For i = startP To endP - 1
+            aryData(startDay, i) = aryData(startDay, i) + 1
+        Next i
+        
+        Set myRange = myRange.Offset(1, 0)
+    Loop
+    counter = 0
+    
+    For i = 1 To 31
+        For j = 1 To 1440
+            If aryData(i, j) > 0 Then
+                counter = counter + 1
+            End If
+        Next j
+    Next i
+    
+    Debug.Print counter
+
+End Sub
