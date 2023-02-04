@@ -87,9 +87,12 @@ End Sub
 
 Sub WriteSammary(dDay As Integer, name As String, count As Integer, workTime As Integer)
 Dim targetRange As Range
-    Debug.Print name
+
     sh_Sammary.Select
-    Set targetRange = sh_Sammary.Cells(Rows.count, "A").End(xlUp).Offset(1, 0)
+    Set targetRange = sh_Sammary.Cells(Rows.count, "A").End(xlUp)
+    If targetRange <> name Then
+        Set targetRange = targetRange.Offset(1, 0)
+    End If
     
     targetRange.Value = name
     Set targetRange = targetRange.Offset(0, 3 * (dDay - 1) + 1)
