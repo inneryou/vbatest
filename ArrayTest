@@ -25,6 +25,8 @@ Dim i As Integer, j As Integer
 Dim counter As Integer
 Dim workTime As Integer
 Dim cnt As Integer
+Dim totalWorkTime As Integer
+Dim totalCount As Integer
 
     sh_Data.Select
     Range("A1").Activate
@@ -53,11 +55,11 @@ Dim cnt As Integer
         startDay = day(myRange.Offset(0, 1))
         str = startYear & "/" & startMonth & "/" & startDay & " 0:00:00"
         startP = DateDiff("n", CDate(str), startDate)
-        endP = DateDiff("n", CDate(str), endDate)
+        endP = DateDiff("n", CDate(str), endDate) - 2
                 
         '配列0番目に日別の件数を格納する
         aryData(counter, startDay, 0) = aryData(counter, startDay, 0) + 1
-        For i = startP To endP - 1
+        For i = startP To endP
             aryData(counter, startDay, i) = aryData(counter, startDay, i) + 1
         Next i
         
@@ -66,8 +68,11 @@ Dim cnt As Integer
     Loop Until myRange = ""
 
     cnt = 1
+        
     Do Until aryName(cnt) = ""
         'Debug.Print aryName(cnt)
+        totalWorkTime = 0
+        totalCount = 0
         For i = 1 To 31
             workTime = 0
             For j = 0 To 1440
@@ -79,7 +84,10 @@ Dim cnt As Integer
             If aryData(cnt, i, 0) > 0 Then
                 Call WriteSammary(i, aryName(cnt), aryData(cnt, i, 0), workTime)
             End If
+            totalWorkTime = totalWorkTime + workTime
+            totalCount = totalCount + aryData(cnt, i, 0)
         Next i
+        Call writeTotalSammary(totalCount, totalWorkTime)
         cnt = cnt + 1
     Loop
 
@@ -95,9 +103,20 @@ Dim targetRange As Range
     End If
     
     targetRange.Value = name
-    Set targetRange = targetRange.Offset(0, 3 * (dDay - 1) + 1)
+    Set targetRange = targetRange.Offset(0, 3 * (dDay - 1) + 4)
     targetRange = count
     targetRange.Offset(0, 1) = workTime
     targetRange.Offset(0, 2).FormulaR1C1 = "=ROUND(RC[-2]/RC[-1]*60,2)"
     
+End Sub
+
+Sub writeTotalSammary(totalCount As Integer, totalWorkTime As Integer)
+Dim myRange As Range
+
+    sh_Sammary.Select
+    Set myRange = sh_Sammary.Cells(Rows.count, "A").End(xlUp)
+    myRange.Offset(0, 1) = totalCount
+    myRange.Offset(0, 2) = totalWorkTime
+    myRange.Offset(0, 3).FormulaR1C1 = "=ROUND(RC[-2]/RC[-1]*60,2)"
+
 End Sub
