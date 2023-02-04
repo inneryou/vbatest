@@ -1,46 +1,100 @@
-Sub ArrayTest()
-Dim aryData(31, 1440) As Integer
+'/**
+'* Main
+'* 処理を開始する
+'*
+'*/
+Sub Main()
+    
+    'シートを初期化
+    sh_Sammary.Range("A3:CP100").ClearContents
+    
+    Call readData
+    
+End Sub
+
+Sub readData()
+Dim aryName(1 To 200) As String '名前を格納する配列
+Dim aryData(1 To 200, 1 To 31, 1440) As Integer '実績DB用の二次元配列
 Dim myRange As Range
 Dim startDate As Date, endDate As Date
 Dim startDay As Integer, startYear As Integer, startMonth As Integer
 Dim startP As Integer, endP As Integer
 Dim str As String
+Dim agName As String, name1 As String, name2 As String '一時的に名前を保持する
 Dim i As Integer, j As Integer
 Dim counter As Integer
+Dim workTime As Integer
+Dim cnt As Integer
 
     sh_Data.Select
     Range("A1").Activate
     
     Set myRange = Range("A2")
     
-    Do Until myRange = ""
-        startDate = CDate(myRange)
-        endDate = CDate(myRange.Offset(0, 1))
+    '名前の初期値をセット
+    name1 = myRange
+    name2 = myRange
+    
+    '人数をカウントする変数に初期値セット
+    counter = 1
+    aryName(1) = name1
+    
+    Do
+        If name1 <> name2 Then
+            counter = counter + 1
+            aryName(counter) = name2
+            name1 = name2
+        End If
+        
+        startDate = CDate(myRange.Offset(0, 1))
+        endDate = CDate(myRange.Offset(0, 2))
         startYear = Year(startDate)
         startMonth = Month(startDate)
-        startDay = Day(myRange)
+        startDay = day(myRange.Offset(0, 1))
         str = startYear & "/" & startMonth & "/" & startDay & " 0:00:00"
         startP = DateDiff("n", CDate(str), startDate)
         endP = DateDiff("n", CDate(str), endDate)
-        
-        Debug.Print startP & " " & endP
-        
+                
+        '配列0番目に日別の件数を格納する
+        aryData(counter, startDay, 0) = aryData(counter, startDay, 0) + 1
         For i = startP To endP - 1
-            aryData(startDay, i) = aryData(startDay, i) + 1
+            aryData(counter, startDay, i) = aryData(counter, startDay, i) + 1
         Next i
         
         Set myRange = myRange.Offset(1, 0)
-    Loop
-    counter = 0
-    
-    For i = 1 To 31
-        For j = 1 To 1440
-            If aryData(i, j) > 0 Then
-                counter = counter + 1
-            End If
-        Next j
-    Next i
-    
-    Debug.Print counter
+        name2 = myRange
+    Loop Until myRange = ""
 
+    cnt = 1
+    Do Until aryName(cnt) = ""
+        'Debug.Print aryName(cnt)
+        For i = 1 To 31
+            workTime = 0
+            For j = 0 To 1440
+                If aryData(cnt, i, j) > 0 Then
+                    workTime = workTime + 1
+                End If
+            Next j
+            Debug.Print cnt & " " & i & " " & aryData(cnt, i, 0)
+            If aryData(cnt, i, 0) > 0 Then
+                Call WriteSammary(i, aryName(cnt), aryData(cnt, i, 0), workTime)
+            End If
+        Next i
+        cnt = cnt + 1
+    Loop
+
+End Sub
+
+Sub WriteSammary(dDay As Integer, name As String, count As Integer, workTime As Integer)
+Dim targetRange As Range
+    Debug.Print name
+    sh_Sammary.Select
+    Set targetRange = sh_Sammary.Cells(Rows.count, "A").End(xlUp).Offset(1, 0)
+    
+    targetRange.Value = name
+    Set targetRange = targetRange.Offset(0, 3 * (dDay - 1) + 1)
+    targetRange = count
+    targetRange.Offset(0, 1) = workTime
+    targetRange.Offset(0, 2).FormulaR1C1 = "=ROUND(RC[-2]/RC[-1]*60,2)"
+    
 End Sub
